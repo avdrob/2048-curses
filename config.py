@@ -1,7 +1,6 @@
 import enum
 
 
-# TODO: Use game mode
 class Mode(enum.Enum):
     Small = 1
     Large = 2

@@ -254,9 +254,6 @@ class Map:
                 yield self.grid[i][j]
 
     def gen_cell(self):
-        # TODO: fix this
-        assert(self.empty_num > 0)
-
         # Generate position different from the previous one
         while True:
             lin_pos = random.randint(1, self.empty_num)
@@ -291,14 +288,9 @@ class Map:
         cell1.pos, cell2.pos = cell2.pos, cell1.pos
 
     def merge_cells(self, src, dest):
-        # TODO: get rid of this
-        assert(src.value == dest.value)
-        prev1, prev2 = src.value, dest.value
-
         dest.value *= 2
         src.value = None
         self.empty_num += 1
-        assert(dest.value == prev1 + prev2)
 
     def push_right(self, cell):
         res = False
