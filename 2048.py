@@ -12,7 +12,6 @@ class HelpBox:
     pass
 
 
-# TODO: Wrap the whole thing into Game class
 class Game:
     def __init__(self, mode=config.Mode.Large):
         self.__mode = mode
@@ -180,22 +179,26 @@ class Map:
     '''
     def __init__(self, mode):
         self.__mode = mode
-        self.__size = config.game_modes[mode]['size']
-        self.__cell_nlines = config.game_modes[mode]['cell_nlines']
-        self.__cell_ncols = config.game_modes[mode]['cell_ncols']
-        self.__numbers = config.game_modes[mode]['numbers']
+        self.__modeset = config.game_modes[mode]
+        self.__size = self.modeset['size']
+        self.__cell_nlines = self.modeset['cell_nlines']
+        self.__cell_ncols = self.modeset['cell_ncols']
+        self.__numbers = self.modeset['numbers']
 
+        if self.modeset['center']:
+            begin_y = (curses.LINES - self.cell_nlines * self.size) // 2
+            begin_x = (curses.COLS - self.__cell_ncols * self.size) // 2
+        else:
+            begin_y, begin_x = 0, 0
         self.__window = curses.newwin(
                             self.cell_nlines * self.size,
                             self.cell_ncols * self.size,
-                            0, 0
-                            # (curses.LINES - self.__cell_nlines * size) // 2,
-                            # (curses.COLS - self.__cell_ncols * size) // 2
+                            begin_y, begin_x
                         )
         # keypad mode: return special values for keys
-        self.__window.keypad(True)
+        self.window.keypad(True)
 
-        self.__empty_num = self.size * self.size
+        self.empty_num = self.size * self.size
         self.gen_grid()
 
         # Prepate for cells generation
@@ -209,6 +212,10 @@ class Map:
     @property
     def mode(self):
         return self.__mode
+
+    @property
+    def modeset(self):
+        return self.__modeset
 
     @property
     def cell_nlines(self):

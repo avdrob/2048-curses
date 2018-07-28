@@ -104,6 +104,7 @@ numbers_large = {
     ]
 }
 
+# {2: ['2'], 4: ['4'], ...}
 numbers_small = {k: [str(k)] for k in numbers_large}
 
 game_modes = {
@@ -112,12 +113,14 @@ game_modes = {
         'cell_nlines': 3,
         'cell_ncols': 7,
         'numbers': numbers_small,
+        'center': False
     },
     Mode.Large: {
         'size': 4,
         'cell_nlines': 9,
         'cell_ncols': 21,
-        'numbers': numbers_large
+        'numbers': numbers_large,
+        'center': False
     }
 }
 
