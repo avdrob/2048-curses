@@ -106,12 +106,52 @@ numbers_large = {
 # {2: ['2'], 4: ['4'], ...}
 numbers_small = {k: [str(k)] for k in numbers_large}
 
+game_over_large = {
+    'game': [
+        '#####  ###  #   # #####',
+        '#     #   # ## ## #    ',
+        '#  ## ##### # # # #####',
+        '#   # #   # #   # #    ',
+        '##### #   # #   # #####'
+    ],
+    'over': [
+        '##### #   # ##### ### ',
+        '#   # #   # #     #  #',
+        '#   #  # #  ##### ### ',
+        '#   #  # #  #     # # ',
+        '#####   #   ##### #  #'
+    ]
+}
+
+you_win_large = {
+    'you': [
+        '#   # ##### #   #',
+        ' # #  #   # #   #',
+        '  #   #   # #   #',
+        '  #   #   # #   #',
+        '  #   ##### #####'
+    ],
+    'win': [
+        '#       # # #   #',
+        '#       # # ##  #',
+        ' #  #  #  # # # #',
+        ' # # # #  # #  ##',
+        '  #   #   # #   #'
+    ]
+}
+
+game_over_small = {'game': ['GAME'], 'over': ['OVER']}
+you_win_small = {'you': ['YOU'], 'win': ['WIN']}
+help_min_width = 20
+
 game_modes = {
     Mode.Small: {
         'size': 4,
         'cell_nlines': 3,
         'cell_ncols': 7,
         'numbers': numbers_small,
+        'game_over': game_over_large,
+        'you_win': you_win_large,
         'center': False
     },
     Mode.Large: {
@@ -119,6 +159,8 @@ game_modes = {
         'cell_nlines': 9,
         'cell_ncols': 21,
         'numbers': numbers_large,
+        'game_over': game_over_small,
+        'you_win': you_win_small,
         'center': False
     }
 }
