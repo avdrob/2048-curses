@@ -62,8 +62,6 @@ class Game:
                 layout_changed = self.map.move_right()
             elif key == ord('q'):
                 break
-            else:
-                continue
 
             if not layout_changed:
                 continue
