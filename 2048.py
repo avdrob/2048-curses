@@ -256,7 +256,7 @@ class Map:
         '''
         while True:
             lin_pos = random.randint(1, self.empty_num)
-            if lin_pos != self.lin_pos_prev:
+            if lin_pos != self.lin_pos_prev or self.empty_num < 2:
                 self.lin_pos_prev = lin_pos
                 break
         value = 4 if random.randint(1, 100) <= config.four_probability else 2
