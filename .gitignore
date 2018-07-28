@@ -1,0 +1,4 @@
+__pycache__
+
+.*             # Hide dotfiles
+!.gitignore    # ... and un-hide .gitignore
