@@ -144,10 +144,13 @@ class Cell:
                                       curses.A_BOLD)
             )
 
-    # Due to historical reasons we cannot just write to the last window
-    # in curses.  So instead we use this workaround with insch() on each
-    # cell's last line
     def draw(self):
+        '''
+        Draw cell on the map
+        Due to historical reasons we cannot just write to the last window
+        in curses.  So instead we use this workaround with insch() on each
+        cell's last line
+        '''
         for i in range(self.map.cell_nlines - 1):
             self.map.window.addstr(
                     self.pos.line * self.map.cell_nlines + i,
@@ -248,7 +251,9 @@ class Map:
                 yield self.grid[i][j]
 
     def gen_cell(self):
-        # Generate position different from the previous one
+        '''
+        Generate new cell position different from the previous one
+        '''
         while True:
             lin_pos = random.randint(1, self.empty_num)
             if lin_pos != self.lin_pos_prev:
