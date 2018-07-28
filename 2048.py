@@ -219,31 +219,16 @@ class Cell:
             )
 
     def draw(self):
-        # TODO: shorten the code here (additional line in the end)
         '''
         Draw cell on the map
-        Due to historical reasons we cannot just write to the last window
-        in curses.  So instead we use this workaround with insch() on each
-        cell's last line
         '''
-        for i in range(self.map.cell_nlines - 1):
+        for i in range(self.map.cell_nlines):
             self.map.window.addstr(
                     self.pos.line * self.map.cell_nlines + i,
                     self.pos.col * self.map.cell_ncols,
                     ' ' * self.map.cell_ncols,
                     curses.color_pair(config.color_pairs[self.value])
             )
-        self.map.window.addstr(
-                (self.pos.line + 1) * self.map.cell_nlines - 1,
-                self.pos.col * self.map.cell_ncols,
-                ' ' * (self.map.cell_ncols - 1),
-                curses.color_pair(config.color_pairs[self.value])
-        )
-        self.map.window.insch(
-                (self.pos.line + 1) * self.map.cell_nlines - 1,
-                (self.pos.col + 1) * self.map.cell_ncols - 2,
-                ' ', curses.color_pair(config.color_pairs[self.value])
-        )
 
         if not self.is_empty():
             self.draw_text()
@@ -270,7 +255,7 @@ class Map:
         else:
             begin_y, begin_x = 0, 0
         self.__window = curses.newwin(
-                            self.cell_nlines * self.size,
+                            self.cell_nlines * self.size + 1,
                             self.cell_ncols * self.size,
                             begin_y, begin_x
                         )
@@ -483,7 +468,7 @@ class Map:
 
 
 if __name__ == '__main__':
-    game = Game(config.Mode.Small)
+    game = Game()
     game.init_graphics()
     game.create_new()
     game.play_game()
