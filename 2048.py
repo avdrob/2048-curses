@@ -14,9 +14,9 @@ class HelpBox:
 
 # TODO: Wrap the whole thing into Game class
 class Game:
-    def __init__(self, size=4, mode=config.Mode.Large):
-        self.__size = size
+    def __init__(self, mode=config.Mode.Large):
         self.__mode = mode
+        self.__size = config.game_modes[mode]['size']
 
     @property
     def size(self):
@@ -42,7 +42,7 @@ class Game:
             curses.init_pair(pairnum, *config.colors[value])
 
     def create_new(self):
-        self.__map = Map(self.size, self.mode)
+        self.__map = Map(self.mode)
         self.map.draw()
 
     def play_game(self):
@@ -102,10 +102,10 @@ class Cell:
         return self.__map
 
     def text_height(self):
-        return len(config.numbers_ascii[self.value])
+        return len(self.map.numbers[self.value])
 
     def text_width(self):
-        return max([len(row) for row in config.numbers_ascii[self.value]])
+        return max([len(row) for row in self.map.numbers[self.value]])
 
     def is_empty(self):
         '''
@@ -142,7 +142,7 @@ class Cell:
             self.map.window.addstr(
                     self.pos.line * self.map.cell_nlines + begin_y + i,
                     self.pos.col * self.map.cell_ncols + begin_x,
-                    config.numbers_ascii[self.value][i],
+                    self.map.numbers[self.value][i],
                     curses.color_pair(config.color_pairs[self.value] |
                                       curses.A_BOLD)
             )
@@ -178,16 +178,16 @@ class Map:
     '''
     Contains grid of cells
     '''
-    def __init__(self,  size, mode):
-        self.__size = size
+    def __init__(self, mode):
         self.__mode = mode
-        # TODO: harcoded values
-        self.__cell_nlines = 9
-        self.__cell_ncols = 21
+        self.__size = config.game_modes[mode]['size']
+        self.__cell_nlines = config.game_modes[mode]['cell_nlines']
+        self.__cell_ncols = config.game_modes[mode]['cell_ncols']
+        self.__numbers = config.game_modes[mode]['numbers']
 
         self.__window = curses.newwin(
-                            self.__cell_nlines * size,
-                            self.__cell_ncols * size,
+                            self.cell_nlines * self.size,
+                            self.cell_ncols * self.size,
                             0, 0
                             # (curses.LINES - self.__cell_nlines * size) // 2,
                             # (curses.COLS - self.__cell_ncols * size) // 2
@@ -195,7 +195,7 @@ class Map:
         # keypad mode: return special values for keys
         self.__window.keypad(True)
 
-        self.__empty_num = size * size
+        self.__empty_num = self.size * self.size
         self.gen_grid()
 
         # Prepate for cells generation
@@ -207,12 +207,20 @@ class Map:
         return self.__size
 
     @property
+    def mode(self):
+        return self.__mode
+
+    @property
     def cell_nlines(self):
         return self.__cell_nlines
 
     @property
     def cell_ncols(self):
         return self.__cell_ncols
+
+    @property
+    def numbers(self):
+        return self.__numbers
 
     @property
     def window(self):
@@ -390,7 +398,7 @@ class Map:
 
 
 if __name__ == '__main__':
-    game = Game(4)
+    game = Game()
     game.init_graphics()
     game.create_new()
     game.play_game()

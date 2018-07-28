@@ -10,7 +10,7 @@ class Mode(enum.Enum):
 # Probability to get 4 (instead of 2), in percentages
 four_probability = 10
 
-numbers_ascii = {
+numbers_large = {
     2: [
         '####',
         '   #',
@@ -102,6 +102,23 @@ numbers_ascii = {
         '#  #   #    # #   ',
         '####   # #### ####'
     ]
+}
+
+numbers_small = {k: [str(k)] for k in numbers_large}
+
+game_modes = {
+    Mode.Small: {
+        'size': 4,
+        'cell_nlines': 3,
+        'cell_ncols': 7,
+        'numbers': numbers_small,
+    },
+    Mode.Large: {
+        'size': 4,
+        'cell_nlines': 9,
+        'cell_ncols': 21,
+        'numbers': numbers_large
+    }
 }
 
 colors = {
