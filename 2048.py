@@ -196,7 +196,7 @@ class Map:
         # keypad mode: return special values for keys
         self.window.keypad(True)
 
-        self.empty_num = self.size * self.size
+        self.__empty_num = self.size * self.size
         self.gen_grid()
 
         # Prepate for cells generation
@@ -239,10 +239,6 @@ class Map:
     def empty_num(self):
         return self.__empty_num
 
-    @empty_num.setter
-    def empty_num(self, val):
-        self.__empty_num = min(max(val, 0), self.size ** 2)
-
     def cells(self):
         '''
         A handy generator saving us from iteration over nested list
@@ -270,7 +266,7 @@ class Map:
 
         pos = target.pos
         self.grid[pos.line][pos.col] = Cell(self, pos, value)
-        self.empty_num -= 1
+        self.__empty_num -= 1
 
     def gen_grid(self):
         self.__grid = []
@@ -288,7 +284,7 @@ class Map:
     def merge_cells(self, src, dest):
         dest.value *= 2
         src.value = None
-        self.empty_num += 1
+        self.__empty_num += 1
 
     def push_right(self, cell):
         res = False
