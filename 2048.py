@@ -42,12 +42,11 @@ class Game:
 
     def create_new(self):
         self.__map = Map(self.mode)
-        self.map.draw()
-
-    def play_game(self):
         self.map.gen_cell()
         self.map.draw()
+        self.game_over = False
 
+    def play_game(self):
         while True:
             layout_changed = False
             key = self.map.window.getch()
@@ -60,6 +59,8 @@ class Game:
                 layout_changed = self.map.move_left()
             elif key == curses.KEY_RIGHT or key == ord('l'):
                 layout_changed = self.map.move_right()
+            elif key == ord('r'):
+                self.create_new()
             elif key == ord('q'):
                 break
 
@@ -68,6 +69,8 @@ class Game:
 
             self.map.gen_cell()
             self.map.draw()
+            if not self.map.is_movable():
+                self.game_over = True
 
     def deinit_graphics(self):
         curses.nocbreak()
