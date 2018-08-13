@@ -267,12 +267,9 @@ class Map:
         self.__empty_num -= 1
 
     def gen_grid(self):
-        self.__grid = []
-        for i in range(self.size):
-            row = []
-            for j in range(self.size):
-                row.append(Cell(self, MapPos(i, j), None))
-            self.grid.append(row)
+        self.__grid = [[Cell(self, MapPos(i, j), None)
+                        for j in range(self.size)]
+                       for i in range(self.size)]
 
     def swap_cells(self, cell1, cell2):
         self.grid[cell1.pos.line][cell1.pos.col] = cell2
