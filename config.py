@@ -12,6 +12,9 @@ four_probability = 10
 # The value you need to obtain (2048 by default)
 thrhold = 2048
 
+# Required number of terminal colors
+colors_num = 256
+
 numbers_large = {
     2: [
         '####',

@@ -2,7 +2,7 @@
 
 import curses
 import random
-# import sys
+import sys
 
 import config
 
@@ -10,11 +10,7 @@ import config
 class Game:
     def __init__(self, mode=config.Mode.Large):
         self.__mode = mode
-        self.__size = config.game_modes[mode]['size']
-
-    @property
-    def size(self):
-        return self.__size
+        self.graphics_inited = False
 
     @property
     def mode(self):
@@ -25,6 +21,8 @@ class Game:
         return self.__map
 
     def init_graphics(self):
+        self.perform_checks()
+
         curses.initscr()            # window object representing screen
         curses.noecho()             # turn off automatic echoing of keys
         curses.cbreak()             # cbreak mode: react to keys instantly
@@ -35,7 +33,45 @@ class Game:
         for value, pairnum in config.color_pairs.items():
             curses.init_pair(pairnum, *config.colors[value])
 
+        self.graphics_inited = True
+
+    def error_exit(self, message):
+        if self.graphics_inited:
+            self.deinit_graphics()
+        print(message, file=sys.stderr)
+        sys.exit(1)
+
+    def perform_checks(self):
+        curses.setupterm()
+        colors = curses.tigetnum('colors')
+        lines = curses.tigetnum('lines')
+        cols = curses.tigetnum('cols')
+
+        if colors < config.colors_num:
+            self.error_exit(f'Sorry, your terminal has no' +
+                            f'{config.colors_num} colors support')
+
+        while True:
+            modeset = config.game_modes[self.mode]
+            size = modeset['size']
+            cell_nlines = modeset['cell_nlines']
+            cell_ncols = modeset['cell_ncols']
+
+            if (cell_nlines * size <= lines and
+                    cell_ncols * size <= cols):
+                break
+            if self.mode == config.Mode.Large:
+                self.__mode = config.Mode.Small
+                continue
+            else:
+                self.error_exit('Sorry, your terminal size is ' +
+                                'insufficient.\nTo play the game ' +
+                                'you need a terminal of size at least ' +
+                                f'{cell_ncols*size}x{cell_nlines*size}')
+
     def create_new(self):
+        self.perform_checks()
+
         self.__map = Map(self, self.mode)
         self.map.gen_cell()
         self.map.draw()
@@ -206,8 +242,10 @@ class Map:
         self.__thrhold = config.thrhold
 
         if self.modeset['center']:
-            begin_y = (curses.LINES - self.cell_nlines * self.size) // 2
-            begin_x = (curses.COLS - self.size * self.cell_ncols) // 2
+            begin_y = (curses.tigetnum('lines') -
+                       self.cell_nlines * self.size) // 2
+            begin_x = (curses.tigetnum('cols') -
+                       self.size * self.cell_ncols) // 2
         else:
             begin_y, begin_x = 0, 0
         self.__window = curses.newwin(
