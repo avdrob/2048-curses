@@ -146,8 +146,8 @@ you_win_large = {
     ]
 }
 
-game_over_small = {'game': ['GAME'], 'over': ['OVER']}
-you_win_small = {'you': ['YOU'], 'win': ['WIN']}
+game_over_small = {'game': ['G A M E'], 'over': ['O V E R']}
+you_win_small = {'you': ['Y O U'], 'win': ['W I N']}
 
 game_modes = {
     Mode.Small: {
@@ -166,7 +166,7 @@ game_modes = {
         'numbers': numbers_large,
         'game_over': game_over_large,
         'you_win': you_win_large,
-        'center': False
+        'center': True
     }
 }
 
