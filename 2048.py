@@ -175,9 +175,8 @@ class Map:
         self.__numbers = self.modeset['numbers']
 
         if self.modeset['center']:
-            total_width = self.size * self.cell_ncols
             begin_y = (curses.LINES - self.cell_nlines * self.size) // 2
-            begin_x = (curses.COLS - total_width) // 2
+            begin_x = (curses.COLS - self.size * self.cell_ncols) // 2
         else:
             begin_y, begin_x = 0, 0
         self.__window = curses.newwin(
