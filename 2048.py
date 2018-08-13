@@ -7,72 +7,6 @@ import random
 import config
 
 
-# TODO: Implement help box
-class HelpBox:
-    def __init__(self, game, mode):
-        self.__game = game
-        self.__mode = mode
-        self.__modeset = config.game_modes[mode]
-        self.__game_over = self.modeset['game_over']
-        self.__you_win = self.modeset['you_win']
-
-        map_width = self.modeset['size'] * self.modeset['cell_ncols']
-        total_width = (map_width + 1 + (self.width() + 2))
-        if self.modeset['center']:
-            begin_y = (curses.LINES - self.height()) // 2
-            begin_x = (curses.COLS - total_width) // 2 + 1 + map_width
-        else:
-            begin_y = 0
-            begin_x = map_width + 1
-
-        self.__window = curses.newwin(self.height(), self.width() + 2,
-                                      begin_y, begin_x)
-
-        line_len = (self.width() - len('[2048]')) // 2
-        self.window.border(curses.ACS_VLINE, curses.ACS_VLINE, ' ')
-        self.window.hline(0, 1, curses.ACS_HLINE, line_len)
-        self.window.hline(0, self.width() - line_len + 1,
-                          curses.ACS_HLINE, line_len)
-        self.window.addstr(0, 1 + line_len, '[2048]')
-
-    @property
-    def game(self):
-        return self.__game
-
-    @property
-    def mode(self):
-        return self.__mode
-
-    @property
-    def modeset(self):
-        return self.__modeset
-
-    @property
-    def game_over(self):
-        return self.__game_over
-
-    @property
-    def you_win(self):
-        return self.__you_win
-
-    @property
-    def window(self):
-        return self.__window
-
-    def width(self):
-        res = max([len(row) for row in self.game_over['game']])
-        res = max(res, max([len(row) for row in self.game_over['over']]))
-        res = max(res, max([len(row) for row in self.you_win['you']]))
-        res = max(res, max([len(row) for row in self.you_win['win']]))
-        return res if res > config.help_min_width else config.help_min_width
-
-    def height(self):
-        return self.modeset['cell_nlines'] * self.modeset['size']
-
-    def draw(self):
-        self.window.refresh()
-
-
 class Game:
     def __init__(self, mode=config.Mode.Large):
         self.__mode = mode
@@ -90,10 +24,6 @@ class Game:
     def map(self):
         return self.__map
 
-    @property
-    def help_box(self):
-        return self.__help_box
-
     def init_graphics(self):
         curses.initscr()            # window object representing screen
         curses.noecho()             # turn off automatic echoing of keys
@@ -106,9 +36,6 @@ class Game:
             curses.init_pair(pairnum, *config.colors[value])
 
     def create_new(self):
-        self.__help_box = HelpBox(self, self.mode)
-        self.help_box.draw()
-
         self.__map = Map(self, self.mode)
         self.map.gen_cell()
         self.map.draw()
@@ -248,8 +175,7 @@ class Map:
         self.__numbers = self.modeset['numbers']
 
         if self.modeset['center']:
-            total_width = (self.size * self.cell_ncols + 1 +
-                           self.game.help_box.width() + 2)
+            total_width = self.size * self.cell_ncols
             begin_y = (curses.LINES - self.cell_nlines * self.size) // 2
             begin_x = (curses.COLS - total_width) // 2
         else:
