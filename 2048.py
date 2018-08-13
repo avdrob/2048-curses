@@ -40,9 +40,22 @@ class Game:
         self.map.gen_cell()
         self.map.draw()
 
-        self.game_over = False
         self.score = 0
         self.moves = 0
+
+    def __get_terminal_key(self):
+        while True:
+            key = self.map.window.getch()
+            if key == ord('r') or key == ord('q'):
+                return key
+
+    def game_over(self):
+        self.map.draw_words(self.map.game_over)
+        return self.__get_terminal_key()
+
+    def you_win(self):
+        self.map.draw_words(self.map.you_win)
+        return self.__get_terminal_key()
 
     def play_game(self):
         while True:
@@ -59,16 +72,31 @@ class Game:
                 layout_changed = self.map.move_right()
             elif key == ord('r'):
                 self.create_new()
+                continue
             elif key == ord('q'):
                 break
 
             if not layout_changed:
                 continue
 
+            if self.map.is_thrhold_reached():
+                self.map.draw()
+                key = self.you_win()
+                if key == ord('r'):
+                    self.create_new()
+                    continue
+                else:
+                    break
+
             self.map.gen_cell()
             self.map.draw()
             if not self.map.is_movable():
-                self.game_over = True
+                key = self.game_over()
+                if key == ord('r'):
+                    self.create_new()
+                    continue
+                else:
+                    break
 
     def deinit_graphics(self):
         curses.nocbreak()
@@ -173,6 +201,9 @@ class Map:
         self.__cell_nlines = self.modeset['cell_nlines']
         self.__cell_ncols = self.modeset['cell_ncols']
         self.__numbers = self.modeset['numbers']
+        self.__game_over = self.modeset['game_over']
+        self.__you_win = self.modeset['you_win']
+        self.__thrhold = config.thrhold
 
         if self.modeset['center']:
             begin_y = (curses.LINES - self.cell_nlines * self.size) // 2
@@ -188,6 +219,7 @@ class Map:
         self.window.keypad(True)
 
         self.__empty_num = self.size * self.size
+        self.__max_value = 0
         self.gen_grid()
 
         # Prepate for cells generation
@@ -219,6 +251,18 @@ class Map:
         return self.__numbers
 
     @property
+    def game_over(self):
+        return self.__game_over
+
+    @property
+    def you_win(self):
+        return self.__you_win
+
+    @property
+    def thrhold(self):
+        return self.__thrhold
+
+    @property
     def window(self):
         return self.__window
 
@@ -233,6 +277,10 @@ class Map:
     @property
     def empty_num(self):
         return self.__empty_num
+
+    @property
+    def max_value(self):
+        return self.__max_value
 
     def cells(self):
         '''
@@ -279,6 +327,7 @@ class Map:
         dest.value *= 2
         src.value = None
         self.__empty_num += 1
+        self.__max_value = max(self.__max_value, dest.value)
         self.game.score += dest.value
 
     def push_right(self, cell):
@@ -377,6 +426,34 @@ class Map:
         for cell in self.cells():
             cell.draw()
 
+    def draw_words(self, words):
+        height = {k: len(v) for k, v in words.items()}
+        width = {k: max([len(row) for row in v])
+                 for k, v in words.items()}
+        total_height = sum(height.values()) + len(height) - 1
+        total_width = max(width.values())
+        total_begin_x = (self.size * self.cell_ncols - total_width) // 2
+        total_begin_y = (self.size * self.cell_nlines - total_height) // 2
+
+        lines = []
+        for word in words.values():
+            for line in word:
+                prefix, postfix = '', ''
+                diff = total_width - len(line)
+                prefix = ' ' * (diff - diff // 2)
+                postfix = ' ' * (diff // 2)
+                lines.append(prefix + line + postfix)
+            lines.append(' ' * total_width)
+        del lines[len(lines) - 1]
+
+        for i in range(len(lines)):
+            self.window.addstr(
+                        total_begin_y + i, total_begin_x, lines[i],
+                        curses.color_pair(
+                            config.color_pairs['words'] | curses.A_BOLD
+                        )
+            )
+
     def is_movable(self):
         if self.empty_num > 0:
             return True
@@ -387,6 +464,9 @@ class Map:
             if below and (below.is_empty() or cell.value == below.value):
                 return True
         return False
+
+    def is_thrhold_reached(self):
+        return self.max_value >= self.thrhold
 
 
 if __name__ == '__main__':
