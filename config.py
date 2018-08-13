@@ -142,7 +142,6 @@ you_win_large = {
 
 game_over_small = {'game': ['GAME'], 'over': ['OVER']}
 you_win_small = {'you': ['YOU'], 'win': ['WIN']}
-help_min_width = 20
 
 game_modes = {
     Mode.Small: {
