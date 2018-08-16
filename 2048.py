@@ -161,6 +161,9 @@ class Cell:
         self.pos = pos
         self.value = value
 
+        # This flag will indicate wether the cell was merged in current move
+        self.was_merged = False
+
     @property
     def map(self):
         return self.__map
@@ -225,6 +228,8 @@ class Cell:
 
         if not self.is_empty():
             self.draw_text()
+
+        self.was_merged = False
 
 
 class Map:
@@ -365,6 +370,7 @@ class Map:
 
     def merge_cells(self, src, dest):
         dest.value *= 2
+        dest.was_merged = True
         src.value = None
         self.__empty_num += 1
         self.__max_value = max(self.__max_value, dest.value)
@@ -377,7 +383,8 @@ class Map:
             self.swap_cells(cell, right)
             right = cell.onright()
             res = True
-        if right and (cell.value == right.value):
+        if (right and cell.value == right.value and
+                not right.was_merged):
             self.merge_cells(cell, right)
             res = True
         return res
@@ -400,7 +407,8 @@ class Map:
             self.swap_cells(cell, left)
             left = cell.onleft()
             res = True
-        if left and (cell.value == left.value):
+        if (left and cell.value == left.value and
+                not left.was_merged):
             self.merge_cells(cell, left)
             res = True
         return res
@@ -423,7 +431,8 @@ class Map:
             self.swap_cells(cell, above)
             above = cell.above()
             res = True
-        if above and (cell.value == above.value):
+        if (above and cell.value == above.value and
+                not above.was_merged):
             self.merge_cells(cell, above)
             res = True
         return res
@@ -446,7 +455,8 @@ class Map:
             self.swap_cells(cell, below)
             below = cell.below()
             res = True
-        if below and (cell.value == below.value):
+        if (below and cell.value == below.value and
+                not below.was_merged):
             self.merge_cells(cell, below)
             res = True
         return res
