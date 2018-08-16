@@ -48,8 +48,8 @@ class Game:
         cols = curses.tigetnum('cols')
 
         if colors < config.colors_num:
-            self.error_exit(f'Sorry, your terminal has no' +
-                            f'{config.colors_num} colors support')
+            self.error_exit('Sorry, your terminal has no' +
+                            '{} colors support'.format(config.colors_num))
 
         while True:
             modeset = config.game_modes[self.mode]
@@ -64,10 +64,12 @@ class Game:
                 self.__mode = config.Mode.Small
                 continue
             else:
-                self.error_exit('Sorry, your terminal size is ' +
-                                'insufficient.\nTo play the game ' +
-                                'you need a terminal of size at least ' +
-                                f'{cell_ncols*size}x{cell_nlines*size}')
+                self.error_exit(
+                        'Sorry, your terminal size is ' +
+                        'insufficient.\nTo play the game ' +
+                        'you need a terminal of size at least ' +
+                        '{}x{}'.format(cell_ncols * size, cell_nlines * size)
+                )
 
     def create_new(self):
         self.perform_checks()
